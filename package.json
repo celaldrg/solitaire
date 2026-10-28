@@ -1,0 +1,11 @@
+{
+  "name": "solitaire",
+  "version": "1.0.0",
+  "description": "Klondike Solitaire in vanilla JavaScript: replayable seeded deals, draw 1 or 3, unlimited undo, hints, auto-complete and a solver for winnable deals.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}
