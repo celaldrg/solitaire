@@ -3,7 +3,8 @@
  * bounce across the table, leaving trails on a canvas that is sized to its
  * container at the device pixel ratio.
  */
-import { RANK_LABELS, isRed, rankOf, suitOf } from './cards.js';
+import { isRed, rankOf, suitOf } from './cards.js';
+import { rankLabel } from './i18n.js';
 import { SUIT_PATHS } from './suits.js';
 
 /** Seconds between two launches. */
@@ -32,6 +33,7 @@ const INDEX_FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
  * @property {number} cardHeight
  * @property {number} rankSize font size of the corner index
  * @property {() => number} random seeded generator for the throws
+ * @property {string} language prints the card indices in this language
  */
 
 /**
@@ -120,7 +122,7 @@ function advance(flyer, dt, size, cardHeight) {
 }
 
 /** Draws a card face once into a small canvas at the device pixel ratio. */
-function paintCard(card, { cardWidth: width, cardHeight: height, rankSize }, ratio, suits) {
+function paintCard(card, { cardWidth: width, cardHeight: height, rankSize, language }, ratio, suits) {
   const sprite = document.createElement('canvas');
   sprite.width = Math.ceil(width * ratio);
   sprite.height = Math.ceil(height * ratio);
@@ -134,7 +136,7 @@ function paintCard(card, { cardWidth: width, cardHeight: height, rankSize }, rat
   g.fillStyle = isRed(card) ? INK.red : INK.black;
   g.font = `700 ${rankSize}px ${INDEX_FONT}`;
   g.textBaseline = 'top';
-  const label = RANK_LABELS[rankOf(card) - 1];
+  const label = rankLabel(language, rankOf(card));
   g.fillText(label, width * 0.07, height * 0.05);
   const corner = rankSize * 0.8;
   const suit = suits[suitOf(card)];

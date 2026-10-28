@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import {
-  DEFAULT_LANGUAGE, LANGUAGES, STRINGS, formatTime, normalizeLanguage, otherLanguage, translate,
+  DEFAULT_LANGUAGE, LANGUAGES, STRINGS, formatTime, normalizeLanguage, otherLanguage, rankLabel, translate,
 } from '../src/i18n.js';
 
 const root = new URL('../', import.meta.url);
@@ -53,9 +53,9 @@ test('every string is used somewhere', () => {
 });
 
 test('translate fills placeholders and falls back to English, then to the key', () => {
-  assert.equal(translate('en', 'drawRestart', { count: 3 }), 'Draw 3: this deal starts over.');
-  assert.equal(translate('tr', 'drawRestart', { count: 3 }), 'Her çekişte 3 kart: bu el baştan başlıyor.');
-  assert.equal(translate('en', 'drawRestart'), 'Draw {count}: this deal starts over.');
+  assert.equal(translate('en', 'drawLater', { count: 3 }), 'Draw 3 starts with the next deal.');
+  assert.equal(translate('tr', 'drawLater', { count: 3 }), 'Her çekişte 3 kart bir sonraki elde başlar.');
+  assert.equal(translate('en', 'drawLater'), 'Draw {count} starts with the next deal.');
   assert.equal(translate('de', 'undo'), 'Undo');
   assert.equal(translate('tr', 'missingKey'), 'missingKey');
 });
@@ -77,4 +77,13 @@ test('formatTime shows minutes and seconds, and hours when needed', () => {
   assert.equal(formatTime(3600), '1:00:00');
   assert.equal(formatTime(3723), '1:02:03');
   assert.equal(formatTime(-5), '0:00');
+});
+
+test('card indices follow the language: J Q K in English, V K P in Turkish', () => {
+  const ranks = Array.from({ length: 13 }, (_, index) => index + 1);
+  assert.deepEqual(ranks.map((rank) => rankLabel('en', rank)),
+    ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']);
+  assert.deepEqual(ranks.map((rank) => rankLabel('tr', rank)),
+    ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'V', 'K', 'P']);
+  assert.equal(rankLabel('xx', 11), 'J');
 });

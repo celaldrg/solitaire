@@ -3,9 +3,10 @@
  * with transforms so every move glides into place and turned cards flip.
  * It only draws what it is given; main.js decides what happens.
  */
-import { ACE, DECK_SIZE, RANK_LABELS, isRed, rankOf, suitOf } from './cards.js';
+import { ACE, DECK_SIZE, KING, isRed, rankOf, suitOf } from './cards.js';
 import { FOUNDATION_IDS, TABLEAU_IDS, TABLEAU_PILES, parsePileId } from './board.js';
 import { SUIT_PATHS } from './suits.js';
+import { DEFAULT_LANGUAGE, rankLabel } from './i18n.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const PILE_IDS = Object.freeze(['stock', 'waste', ...FOUNDATION_IDS, ...TABLEAU_IDS]);
@@ -28,6 +29,7 @@ export function createTableView(table) {
   const cursor = element('div', 'kbd-cursor');
   table.append(...slots.values(), ...cards, cursor);
   const marks = new Map();
+  setLanguage(DEFAULT_LANGUAGE);
   let previous = [];
   let settleTimer = 0;
 
@@ -78,6 +80,22 @@ export function createTableView(table) {
     slots.get('stock').classList.toggle('recycle', board.stock.length === 0 && board.waste.length > 0);
   }
 
+  /**
+   * Prints the card indices and the empty-slot hints (Ace, King) in a language.
+   * @param {string} language
+   */
+  function setLanguage(language) {
+    cards.forEach((el, card) => {
+      const label = rankLabel(language, rankOf(card));
+      for (const span of el.querySelectorAll('.rank, .court-rank')) span.textContent = label;
+    });
+    for (const [id, el] of slots) {
+      const { kind } = parsePileId(id);
+      if (kind === 'foundation') el.dataset.hint = rankLabel(language, ACE);
+      if (kind === 'tableau') el.dataset.hint = rankLabel(language, KING);
+    }
+  }
+
   /** Puts every card face down on the stock without animation, ready to be dealt. */
   function gatherInStock(layout) {
     const { x, y } = layout.slots.stock;
@@ -108,6 +126,7 @@ export function createTableView(table) {
 
   return {
     render,
+    setLanguage,
 
     /**
      * Moves cards along with the pointer.
@@ -199,9 +218,8 @@ function createCard(card) {
   const el = element('div', `card ${isRed(card) ? 'red' : 'black'} down`);
   el.dataset.card = String(card);
   el.addEventListener('animationend', () => el.classList.remove('nope'));
-  const label = RANK_LABELS[rankOf(card) - 1];
   const face = element('div', 'card-face');
-  face.append(element('span', 'rank', label), suitIcon(suitOf(card), 'corner-suit'), artwork(card, label));
+  face.append(element('span', 'rank'), suitIcon(suitOf(card), 'corner-suit'), artwork(card));
   const inner = element('div', 'card-inner');
   inner.append(face, element('div', 'card-back'));
   el.append(inner);
@@ -209,11 +227,11 @@ function createCard(card) {
 }
 
 /** A large suit for number cards and Aces, a framed letter for court cards. */
-function artwork(card, label) {
+function artwork(card) {
   const rank = rankOf(card);
   if (rank <= 10) return suitIcon(suitOf(card), rank === ACE ? 'pip ace' : 'pip');
   const court = element('div', 'court');
-  court.append(element('span', 'court-rank', label), suitIcon(suitOf(card), 'court-suit'));
+  court.append(element('span', 'court-rank'), suitIcon(suitOf(card), 'court-suit'));
   return court;
 }
 

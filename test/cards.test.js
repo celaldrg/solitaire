@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  ACE, CLUBS, DECK_SIZE, DIAMONDS, HEARTS, KING, RANK_LABELS, SPADES, SUIT_SYMBOLS,
-  cardCode, cardLabel, createDeck, isRed, makeCard, parseCard, rankOf, suitOf,
+  ACE, CLUBS, DECK_SIZE, DIAMONDS, HEARTS, KING, SPADES,
+  cardCode, createDeck, isRed, makeCard, parseCard, rankOf, suitOf,
 } from '../src/cards.js';
 
 test('a deck holds 52 distinct cards, Ace to King in every suit', () => {
@@ -32,16 +32,10 @@ test('diamonds and hearts are red, clubs and spades are black', () => {
   assert.equal(isRed(makeCard(SPADES, 10)), false);
 });
 
-test('rank labels and suit symbols are indexed by rank - 1 and suit id', () => {
-  assert.deepEqual([...SUIT_SYMBOLS], ['♣', '♦', '♥', '♠']);
-  assert.equal(RANK_LABELS.length, 13);
-  assert.equal(RANK_LABELS[ACE - 1], 'A');
-  assert.equal(RANK_LABELS[KING - 1], 'K');
-});
-
-test('labels use suit symbols, codes use suit letters', () => {
-  assert.equal(cardLabel(makeCard(HEARTS, 10)), '10♥');
-  assert.equal(cardLabel(makeCard(SPADES, ACE)), 'A♠');
+test('codes are a rank code plus a suit letter', () => {
+  assert.equal(cardCode(makeCard(HEARTS, 10)), '10H');
+  assert.equal(cardCode(makeCard(SPADES, ACE)), 'AS');
+  assert.equal(cardCode(makeCard(SPADES, KING)), 'KS');
   assert.equal(cardCode(makeCard(CLUBS, 12)), 'QC');
   assert.equal(cardCode(makeCard(DIAMONDS, 7)), '7D');
 });

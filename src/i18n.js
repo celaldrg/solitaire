@@ -37,7 +37,7 @@ const EN = Object.freeze({
   hintRecycle: 'Turn the waste back over.',
   searching: 'Looking for a winnable deal…',
   notFound: 'No winnable deal found quickly, so this one is random.',
-  drawRestart: 'Draw {count}: this deal starts over.',
+  drawLater: 'Draw {count} starts with the next deal.',
   winnableLater: 'Winnable deals start with the next deal.',
   winTitle: 'You won!',
   winStats: '{score} points · {moves} moves · {time}',
@@ -104,7 +104,7 @@ const TR = Object.freeze({
   hintRecycle: 'Açık kartları desteye çevir.',
   searching: 'Çözülebilir bir el aranıyor…',
   notFound: 'Kısa sürede çözülebilir el bulunamadı; bu el rastgele.',
-  drawRestart: 'Her çekişte {count} kart: bu el baştan başlıyor.',
+  drawLater: 'Her çekişte {count} kart bir sonraki elde başlar.',
   winnableLater: 'Çözülebilir eller bir sonraki elde başlar.',
   winTitle: 'Kazandın!',
   winStats: '{score} puan · {moves} hamle · {time}',
@@ -141,6 +141,25 @@ const TR = Object.freeze({
 
 /** Strings by language code. */
 export const STRINGS = Object.freeze({ en: EN, tr: TR });
+
+/**
+ * Card indices by language, indexed by `rank - 1`. Turkish decks print
+ * V (Vale), K (Kız) and P (Papaz) for the jack, queen and king.
+ */
+const RANK_INDICES = Object.freeze({
+  en: Object.freeze(['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']),
+  tr: Object.freeze(['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'V', 'K', 'P']),
+});
+
+/**
+ * The index printed on a card of this rank.
+ * @param {string} language
+ * @param {number} rank 1 (Ace) .. 13 (King)
+ * @returns {string}
+ */
+export function rankLabel(language, rank) {
+  return RANK_INDICES[normalizeLanguage(language)][rank - 1];
+}
 
 /**
  * @param {unknown} value a stored or requested language code

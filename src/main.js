@@ -242,6 +242,7 @@ function celebrate(state) {
     cardHeight: app.layout.cardHeight,
     rankSize: app.layout.rankSize,
     random: createRng(state.deal),
+    language: app.language,
   });
 }
 
@@ -307,9 +308,15 @@ function nextTask() {
   });
 }
 
-/** Sets the game up again from its start: a deal from its first card, the demo from its layout. */
+/**
+ * Sets the game up again from its start: a deal from its first card, the demo
+ * from its layout. A draw count changed mid-game applies here, and the solver's
+ * check only holds for the count it was made with.
+ */
 function restart() {
-  if (app.setup) startGame(app.setup.create, app.setup.options);
+  if (!app.setup) return;
+  const sameCount = app.game !== null && app.game.getState().drawCount === app.settings.drawCount;
+  startGame(app.setup.create, { ...app.setup.options, verified: app.setup.options.verified === true && sameCount });
 }
 
 // ---- settings ----
@@ -335,20 +342,21 @@ function isFresh() {
 }
 
 /**
- * The game on the table always follows the draw buttons: a new draw count
- * starts the deal again with it. A deal the solver checked was only checked
- * for the old count, so with "winnable deals only" a new one is looked for.
+ * A new draw count applies at once while nothing has been played; a game in
+ * progress keeps its count and the next deal (or Restart) uses the new one, so
+ * no moves are thrown away. A deal the solver checked was only checked for the
+ * old count, so with "winnable deals only" a new one is looked for.
  */
 function setDrawCount(drawCount) {
   if (drawCount === app.settings.drawCount) return;
-  const playing = !isFresh();
   saveSettings({ ...app.settings, drawCount });
-  if (app.settings.winnableOnly || !app.setup) {
+  if (!isFresh()) {
+    hud.toast('drawLater', { count: drawCount });
+  } else if (app.settings.winnableOnly || !app.setup) {
     newDeal();
-    return;
+  } else {
+    startGame(app.setup.create, { ...app.setup.options, verified: false });
   }
-  startGame(app.setup.create, { ...app.setup.options, verified: false });
-  if (playing) hud.toast('drawRestart', { count: drawCount });
 }
 
 function setWinnableOnly(winnableOnly) {
@@ -366,6 +374,7 @@ function setLanguage(language) {
   app.language = language;
   writeValue('language', language);
   hud.setLanguage(language);
+  view.setLanguage(language);
 }
 
 function openDealDialog() {
@@ -499,6 +508,7 @@ setInterval(() => {
 
 function start() {
   hud.setLanguage(app.language);
+  view.setLanguage(app.language);
   const launch = parseLaunchOptions(window.location.search);
   if (launch.drawCount !== null) app.settings = { ...app.settings, drawCount: launch.drawCount };
   syncSettings();

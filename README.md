@@ -9,7 +9,7 @@
 
 ## Features
 
-- Klondike with **Draw 1** or **Draw 3** (a switch applies at once), standard scoring, a move
+- Klondike with **Draw 1** or **Draw 3** (a switch applies at once before the first move, otherwise from the next deal or restart), standard scoring, a move
   counter and a timer.
 - **Numbered deals** from 1 to 999999: share a deal, replay it by its number or restart it.
 - **Winnable deals only**: a built-in solver checks each new deal before you see it, without
@@ -129,7 +129,7 @@ ve yalnızca çözülebilir eller dağıtan bir çözücü içerir.
 
 ### Özellikler
 
-- **1 kart** ya da **3 kart** çekme (değişiklik hemen geçerli olur), standart puanlama, hamle
+- **1 kart** ya da **3 kart** çekme (ilk hamleden önce hemen, sonra bir sonraki elde ya da baştan başlatınca geçerli olur), standart puanlama, hamle
   sayacı ve süre.
 - 1 ile 999999 arasında **numaralı eller**: bir eli numarasıyla paylaş, yeniden oyna ya da
   baştan başlat.

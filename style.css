@@ -456,12 +456,9 @@ svg {
   line-height: 1;
 }
 
-.slot-foundation::after {
-  content: "A";
-}
-
+.slot-foundation::after,
 .slot-tableau::after {
-  content: "K";
+  content: attr(data-hint);
 }
 
 .slot-waste {

@@ -16,11 +16,8 @@ export const DIAMONDS = 1;
 export const HEARTS = 2;
 export const SPADES = 3;
 
-/** Suit symbols indexed by suit id. */
-export const SUIT_SYMBOLS = Object.freeze(['♣', '♦', '♥', '♠']);
-
-/** Rank labels indexed by `rank - 1`. */
-export const RANK_LABELS = Object.freeze([
+/** ASCII rank codes indexed by `rank - 1` (the UI prints i18n.rankLabel). */
+const RANK_CODES = Object.freeze([
   'A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K',
 ]);
 
@@ -63,21 +60,12 @@ export function isRed(card) {
 }
 
 /**
- * Short display label such as "10♥" or "Q♠".
- * @param {number} card
- * @returns {string}
- */
-export function cardLabel(card) {
-  return RANK_LABELS[rankOf(card) - 1] + SUIT_SYMBOLS[suitOf(card)];
-}
-
-/**
  * ASCII code such as "10H" or "QS" (rank label + suit letter C, D, H or S).
  * @param {number} card
  * @returns {string}
  */
 export function cardCode(card) {
-  return RANK_LABELS[rankOf(card) - 1] + SUIT_LETTERS[suitOf(card)];
+  return RANK_CODES[rankOf(card) - 1] + SUIT_LETTERS[suitOf(card)];
 }
 
 /**
@@ -89,7 +77,7 @@ export function cardCode(card) {
 export function parseCard(code) {
   const match = CODE_PATTERN.exec(code);
   if (!match) throw new RangeError(`Unknown card code: ${code}`);
-  return makeCard(SUIT_LETTERS.indexOf(match[2]), RANK_LABELS.indexOf(match[1]) + 1);
+  return makeCard(SUIT_LETTERS.indexOf(match[2]), RANK_CODES.indexOf(match[1]) + 1);
 }
 
 /**
